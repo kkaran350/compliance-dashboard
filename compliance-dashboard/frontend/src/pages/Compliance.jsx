@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import api from '../api.js';
 
 const CATEGORIES = [
@@ -16,6 +16,7 @@ const STATUSES = ['Pending', 'In Progress', 'Completed', 'Overdue'];
 
 const emptyForm = {
   title: '',
+  exchange: '',
   category: CATEGORIES[0],
   reference_no: '',
   description: '',
@@ -47,6 +48,9 @@ export default function Compliance() {
   const [filters, setFilters] = useState({ status: '', category: '', q: '' });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [importResult, setImportResult] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const importInputRef = useRef(null);
 
   const load = async () => {
     setLoading(true);
@@ -76,6 +80,7 @@ export default function Compliance() {
     setEditing(item);
     setForm({
       title: item.title || '',
+      exchange: item.exchange || '',
       category: item.category || CATEGORIES[0],
       reference_no: item.reference_no || '',
       description: item.description || '',
@@ -122,6 +127,27 @@ export default function Compliance() {
     load();
   };
 
+  const handleImport = async (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setImporting(true);
+    setImportResult(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', f);
+      const res = await api.post('/compliance/import', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setImportResult(res.data);
+      load();
+    } catch (err) {
+      setImportResult({ error: err.response?.data?.error || 'Import failed.' });
+    } finally {
+      setImporting(false);
+      if (importInputRef.current) importInputRef.current.value = '';
+    }
+  };
+
   const markComplete = async (item) => {
     const fd = new FormData();
     fd.append('status', 'Completed');
@@ -160,10 +186,45 @@ export default function Compliance() {
           <h2 className="text-xl font-bold text-slate-800">Compliances</h2>
           <p className="text-sm text-slate-500">Track MCX and regulatory compliance items</p>
         </div>
-        <button className="btn-primary" onClick={openAdd}>
-          + Add / Upload Compliance
-        </button>
+                <div className="flex gap-3">
+          <label className="btn-secondary cursor-pointer">
+            {importing ? 'Importing…' : 'Bulk Upload Tracker (Excel)'}
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".xlsx,.xls,.csv"
+              className="hidden"
+              onChange={handleImport}
+              disabled={importing}
+            />
+          </label>
+          <button className="btn-primary" onClick={openAdd}>
+            + Add / Upload Compliance
+          </button>
+        </div>
       </div>
+
+      {importResult && (
+        <div
+          className={`card ${importResult.error ? 'border-red-200 bg-red-50' : 'border-emerald-200 bg-emerald-50'}`}
+        >
+          {importResult.error ? (
+            <p className="text-sm text-red-700">{importResult.error}</p>
+          ) : (
+            <div className="text-sm text-emerald-700">
+              <p>
+                Imported {importResult.imported} compliance item(s)
+                {importResult.skippedCount > 0 && ` (${importResult.skippedCount} skipped — missing a title)`}.
+              </p>
+              {importResult.sheets?.length > 0 && (
+                <p className="text-xs text-emerald-600 mt-1">
+                  {importResult.sheets.map((s) => `${s.sheet}: ${s.imported}${s.note ? ` (${s.note})` : ''}`).join(' · ')}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="card flex flex-wrap gap-3 items-end">
         <div className="w-40">
@@ -213,6 +274,7 @@ export default function Compliance() {
             <thead>
               <tr className="text-left text-slate-500 border-b border-slate-200">
                 <th className="pb-2 pr-3">Title</th>
+                <th className="pb-2 pr-3">Exchange</th>
                 <th className="pb-2 pr-3">Category</th>
                 <th className="pb-2 pr-3">Reference No.</th>
                 <th className="pb-2 pr-3">Frequency</th>
@@ -226,6 +288,7 @@ export default function Compliance() {
               {items.map((item) => (
                 <tr key={item.id} className="border-b border-slate-100 last:border-0 align-top">
                   <td className="py-3 pr-3 font-medium text-slate-700">{item.title}</td>
+                  <td className="py-3 pr-3 text-slate-500">{item.exchange || '—'}</td>
                   <td className="py-3 pr-3 text-slate-500">{item.category || '—'}</td>
                   <td className="py-3 pr-3 text-slate-500">{item.reference_no || '—'}</td>
                   <td className="py-3 pr-3 text-slate-500">{item.frequency}</td>
@@ -297,6 +360,16 @@ export default function Compliance() {
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="e.g. MCX Monthly Client Margin Reporting"
+                />
+              </div>
+
+              <div>
+                <label className="label">Exchange</label>
+                <input
+                  className="input"
+                  value={form.exchange}
+                  onChange={(e) => setForm({ ...form, exchange: e.target.value })}
+                  placeholder="e.g. MCX, BSE, NSE"
                 />
               </div>
 

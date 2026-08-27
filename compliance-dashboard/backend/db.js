@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS compliances (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
+  exchange TEXT,                          -- e.g. MCX, BSE, NSE
   category TEXT,                          -- e.g. MCX Circular, Margin, Reporting, Audit, KYC
   reference_no TEXT,                      -- e.g. MCX circular / notice number
   description TEXT,
@@ -64,5 +65,12 @@ CREATE INDEX IF NOT EXISTS idx_compliance_due ON compliances(due_date);
 CREATE INDEX IF NOT EXISTS idx_inventory_dept ON inventory(department);
 CREATE INDEX IF NOT EXISTS idx_inventory_type ON inventory(asset_type);
 `);
+
+// ---------- Lightweight migration: add columns that may not exist yet on
+// databases created before this field was introduced ----------
+const complianceColumns = db.prepare('PRAGMA table_info(compliances)').all().map((c) => c.name);
+if (!complianceColumns.includes('exchange')) {
+  db.exec('ALTER TABLE compliances ADD COLUMN exchange TEXT');
+}
 
 module.exports = db;
