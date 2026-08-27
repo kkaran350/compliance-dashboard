@@ -1,0 +1,8 @@
+node_modules/
+backend/data/*.db
+backend/data/*.db-*
+backend/uploads/compliance/*
+!backend/uploads/compliance/.gitkeep
+backend/uploads/tmp/*
+.env
+dist/
