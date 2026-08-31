@@ -1,13 +1,17 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, ShieldCheck, Server, Sun, Moon, LogOut } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext.jsx';
 
-const linkBase =
-  'flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition';
-const linkActive = 'bg-brand-600 text-white';
-const linkInactive = 'text-slate-600 hover:bg-slate-100';
+const NAV_ITEMS = [
+  { to: '/', end: true, icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/compliance', icon: ShieldCheck, label: 'Compliances' },
+  { to: '/inventory', icon: Server, label: 'Inventory' },
+];
 
 export default function Sidebar({ user, logout }) {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -15,40 +19,54 @@ export default function Sidebar({ user, logout }) {
   };
 
   return (
-    <aside className="w-64 shrink-0 bg-white border-r border-slate-200 flex flex-col hidden md:flex">
-      <div className="px-6 py-5 border-b border-slate-200">
-        <h1 className="text-lg font-bold text-slate-800">Compliance Hub</h1>
-        <p className="text-xs text-slate-500 mt-0.5">MCX Compliance & Asset Inventory</p>
+    <aside className="w-64 shrink-0 bg-surface border-r border-line flex-col hidden md:flex">
+      <div className="px-6 py-6 border-b border-line">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm">
+            <ShieldCheck size={18} className="text-white" />
+          </div>
+          <h1 className="text-lg font-bold text-ink tracking-tight">Compliance Hub</h1>
+        </div>
+        <p className="text-xs text-faint mt-2 tracking-wide">
+          MCX Compliance &amp; Asset Inventory
+        </p>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
-        <NavLink
-          to="/"
-          end
-          className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkInactive}`}
-        >
-          Dashboard
-        </NavLink>
-        <NavLink
-          to="/compliance"
-          className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkInactive}`}
-        >
-          Compliances
-        </NavLink>
-        <NavLink
-          to="/inventory"
-          className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkInactive}`}
-        >
-          Inventory
-        </NavLink>
+        {NAV_ITEMS.map(({ to, end, icon: Icon, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={({ isActive }) => `nav-link ${isActive ? 'nav-link-active' : 'nav-link-inactive'}`}
+          >
+            <Icon size={18} />
+            {label}
+          </NavLink>
+        ))}
       </nav>
 
-      <div className="px-4 py-4 border-t border-slate-200">
-        <p className="text-sm font-medium text-slate-800">{user?.name}</p>
-        <p className="text-xs text-slate-500 mb-3">@{user?.username} · {user?.role}</p>
-        <button onClick={handleLogout} className="btn-secondary w-full">
-          Log out
+      <div className="px-4 py-4 border-t border-line space-y-3">
+        <button onClick={toggleTheme} className="btn-secondary w-full justify-center">
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          {theme === 'dark' ? 'Light mode' : 'Dark mode'}
         </button>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-ink">{user?.name}</p>
+            <p className="text-xs text-faint">
+              @{user?.username} · <span className="text-primary">{user?.role}</span>
+            </p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-faint hover:text-danger hover:bg-dangerSoft transition-colors"
+            title="Log out"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
       </div>
     </aside>
   );

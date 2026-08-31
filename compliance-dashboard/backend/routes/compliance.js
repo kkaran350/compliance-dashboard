@@ -50,10 +50,6 @@ router.get('/', requireAuth, (req, res) => {
   let sql = 'SELECT * FROM compliances WHERE 1=1';
   const params = [];
 
-  if (status) {
-    sql += ' AND status = ?';
-    params.push(status);
-  }
   if (category) {
     sql += ' AND category = ?';
     params.push(category);
@@ -65,7 +61,15 @@ router.get('/', requireAuth, (req, res) => {
   sql += ' ORDER BY (due_date IS NULL), due_date ASC, id DESC';
 
   const rows = db.prepare(sql).all(...params);
-  const withComputedStatus = rows.map((r) => ({ ...r, status: recomputeStatus(r) }));
+  let withComputedStatus = rows.map((r) => ({ ...r, status: recomputeStatus(r) }));
+
+  // "Overdue" is never stored — it's computed from due_date at read time — so
+  // status filtering always happens here in JS, after computing it, rather
+  // than in SQL against the raw stored column.
+  if (status) {
+    withComputedStatus = withComputedStatus.filter((r) => r.status === status);
+  }
+
   res.json(withComputedStatus);
 });
 

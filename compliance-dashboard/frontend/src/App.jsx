@@ -36,7 +36,7 @@ function Protected({ user, children }) {
 
 function Shell({ user, logout, children }) {
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen">
       <Sidebar user={user} logout={logout} />
       <div className="flex-1 flex flex-col min-w-0">
         <MobileNav user={user} logout={logout} />

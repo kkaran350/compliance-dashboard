@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ShieldCheck, Sun, Moon } from 'lucide-react';
 import api from '../api.js';
+import { useTheme } from '../context/ThemeContext.jsx';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -8,6 +10,7 @@ export default function Login({ onLogin }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const submit = async (e) => {
     e.preventDefault();
@@ -25,16 +28,27 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center px-4 relative">
+      <button
+        onClick={toggleTheme}
+        className="absolute top-5 right-5 btn-secondary !px-3 !py-2"
+        title="Toggle theme"
+      >
+        {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+      </button>
+
+      <div className="w-full max-w-sm relative">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-slate-800">Compliance Hub</h1>
-          <p className="text-sm text-slate-500 mt-1">MCX Compliance & Asset Inventory Dashboard</p>
+          <div className="w-12 h-12 mx-auto rounded-xl bg-primary flex items-center justify-center mb-4 shadow-sm">
+            <ShieldCheck size={22} className="text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-ink">Compliance Hub</h1>
+          <p className="text-sm text-muted mt-1">MCX Compliance &amp; Asset Inventory Dashboard</p>
         </div>
 
         <form onSubmit={submit} className="card space-y-4">
           {error && (
-            <div className="bg-red-50 text-red-700 text-sm px-3 py-2 rounded-lg">{error}</div>
+            <div className="bg-dangerSoft text-danger text-sm px-3 py-2 rounded-lg">{error}</div>
           )}
           <div>
             <label className="label">Username</label>
@@ -56,14 +70,14 @@ export default function Login({ onLogin }) {
               required
             />
           </div>
-          <button className="btn-primary w-full" disabled={loading}>
+          <button className="btn-primary w-full justify-center" disabled={loading}>
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
-        <p className="text-xs text-slate-400 text-center mt-4">
-          First time setup? Run <code>npm run seed</code> in the backend to create the admin
-          account (see README).
+        <p className="text-xs text-faint text-center mt-4">
+          First time setup? Run <code className="text-muted">npm run seed</code> in the backend
+          to create the admin account (see README).
         </p>
       </div>
     </div>
