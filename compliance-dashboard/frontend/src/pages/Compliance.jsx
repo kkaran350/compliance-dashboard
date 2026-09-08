@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Plus, Upload, Download, Pencil, Trash2, CheckCircle2 } from 'lucide-react';
 import api from '../api.js';
 import Modal from '../components/Modal.jsx';
@@ -35,13 +36,18 @@ function StatusBadge({ status }) {
 }
 
 export default function Compliance() {
+  const [searchParams] = useSearchParams();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [file, setFile] = useState(null);
-  const [filters, setFilters] = useState({ status: '', category: '', q: '' });
+  const [filters, setFilters] = useState({
+    status: searchParams.get('status') || '',
+    category: '',
+    q: '',
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [importResult, setImportResult] = useState(null);
@@ -172,7 +178,9 @@ export default function Compliance() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-ink">Compliances</h2>
+          <h2 className="text-2xl font-bold text-ink">
+            Compliances <span className="text-base font-normal text-faint">({items.length})</span>
+          </h2>
           <p className="text-sm text-muted mt-1">Track MCX and regulatory compliance items</p>
         </div>
         <div className="flex gap-3">
@@ -254,6 +262,7 @@ export default function Compliance() {
           <table className="data-table min-w-[900px]">
             <thead>
               <tr>
+                <th>#</th>
                 <th>Title</th>
                 <th>Exchange</th>
                 <th>Category</th>
@@ -266,8 +275,9 @@ export default function Compliance() {
               </tr>
             </thead>
             <tbody>
-              {items.map((item) => (
+              {items.map((item, idx) => (
                 <tr key={item.id} className="align-top">
+                  <td className="text-faint">{idx + 1}</td>
                   <td className="font-medium text-ink">{item.title}</td>
                   <td>{item.exchange || '—'}</td>
                   <td>{item.category || '—'}</td>

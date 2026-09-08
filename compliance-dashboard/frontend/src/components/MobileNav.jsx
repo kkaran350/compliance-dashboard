@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, ShieldCheck, Server, Sun, Moon, LogOut, Menu, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext.jsx';
+import NotificationBell from './NotificationBell.jsx';
 
 const NAV_ITEMS = [
   { to: '/', end: true, icon: LayoutDashboard, label: 'Dashboard' },
@@ -23,9 +24,12 @@ export default function MobileNav({ user, logout }) {
           </div>
           <h1 className="font-bold text-ink">Compliance Hub</h1>
         </div>
-        <button className="btn-secondary" onClick={() => setOpen((o) => !o)}>
-          {open ? <X size={16} /> : <Menu size={16} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <button className="btn-secondary" onClick={() => setOpen((o) => !o)}>
+            {open ? <X size={16} /> : <Menu size={16} />}
+          </button>
+        </div>
       </div>
       {open && (
         <div className="px-4 pb-3 space-y-1">
