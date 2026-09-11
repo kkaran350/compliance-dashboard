@@ -116,7 +116,9 @@ export default function Inventory() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-ink">Inventory</h2>
+          <h2 className="text-2xl font-bold text-ink">
+            Inventory <span className="text-base font-normal text-faint">({items.length})</span>
+          </h2>
           <p className="text-sm text-muted mt-1">Servers, desktops and other IT assets</p>
         </div>
         <div className="flex gap-3">
@@ -200,6 +202,7 @@ export default function Inventory() {
           <table className="data-table min-w-[1100px]">
             <thead>
               <tr>
+                <th>#</th>
                 <th>Asset ID</th>
                 <th>Type</th>
                 <th>Processor</th>
@@ -216,8 +219,9 @@ export default function Inventory() {
               </tr>
             </thead>
             <tbody>
-              {items.map((item) => (
+              {items.map((item, idx) => (
                 <tr key={item.id}>
+                  <td className="text-faint">{idx + 1}</td>
                   <td className="font-medium text-ink">{item.asset_id}</td>
                   <td>{item.asset_type}</td>
                   <td className="max-w-[220px] truncate" title={item.processor}>

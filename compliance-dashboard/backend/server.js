@@ -25,7 +25,7 @@ const bcrypt = require('bcryptjs');
 const authRoutes = require('./routes/auth');
 const complianceRoutes = require('./routes/compliance');
 const inventoryRoutes = require('./routes/inventory');
-
+const formsRoutes = require('./routes/forms');
 const app = express();
 
 app.use(cors());
@@ -37,6 +37,7 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/compliance', complianceRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/forms', formsRoutes);
 
 // Serve the built frontend (frontend/dist) as static files, so the whole app
 // is reachable from a single URL / single deployed service.

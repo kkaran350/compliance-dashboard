@@ -6,6 +6,7 @@ import Compliance from './pages/Compliance.jsx';
 import Inventory from './pages/Inventory.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import MobileNav from './components/MobileNav.jsx';
+import Forms from './pages/Forms.jsx';
 
 function useAuth() {
   const [user, setUser] = useState(() => {
@@ -53,42 +54,53 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/login"
-          element={user ? <Navigate to="/" replace /> : <Login onLogin={login} />}
-        />
-        <Route
-          path="/"
-          element={
-            <Protected user={user}>
-              <Shell user={user} logout={logout}>
-                <Dashboard />
-              </Shell>
-            </Protected>
-          }
-        />
-        <Route
-          path="/compliance"
-          element={
-            <Protected user={user}>
-              <Shell user={user} logout={logout}>
-                <Compliance />
-              </Shell>
-            </Protected>
-          }
-        />
-        <Route
-          path="/inventory"
-          element={
-            <Protected user={user}>
-              <Shell user={user} logout={logout}>
-                <Inventory />
-              </Shell>
-            </Protected>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+  <Route
+    path="/login"
+    element={user ? <Navigate to="/" replace /> : <Login onLogin={login} />}
+  />
+  <Route
+    path="/"
+    element={
+      <Protected user={user}>
+        <Shell user={user} logout={logout}>
+          <Dashboard />
+        </Shell>
+      </Protected>
+    }
+  />
+  <Route
+    path="/compliance"
+    element={
+      <Protected user={user}>
+        <Shell user={user} logout={logout}>
+          <Compliance />
+        </Shell>
+      </Protected>
+    }
+  />
+  <Route
+    path="/inventory"
+    element={
+      <Protected user={user}>
+        <Shell user={user} logout={logout}>
+          <Inventory />
+        </Shell>
+      </Protected>
+    }
+  />
+  <Route
+    path="/forms"
+    element={
+      <Protected user={user}>
+        <Shell user={user} logout={logout}>
+          <Forms />
+        </Shell>
+      </Protected>
+    }
+  />
+  <Route path="*" element={<Navigate to="/" replace />} />
+</Routes>
     </BrowserRouter>
+    
   );
 }

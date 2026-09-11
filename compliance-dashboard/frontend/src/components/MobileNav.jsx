@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ShieldCheck, Server, Sun, Moon, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, Server, FileText, Sun, Moon, LogOut, Menu, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext.jsx';
 import NotificationBell from './NotificationBell.jsx';
 
@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/', end: true, icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/compliance', icon: ShieldCheck, label: 'Compliances' },
   { to: '/inventory', icon: Server, label: 'Inventory' },
+  { to: '/forms', icon: FileText, label: 'Forms' },
 ];
 
 export default function MobileNav({ user, logout }) {
