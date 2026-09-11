@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   ShieldCheck,
   Server,
+  FileText,
   Sun,
   Moon,
   LogOut,
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { to: '/', end: true, icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/compliance', icon: ShieldCheck, label: 'Compliances' },
   { to: '/inventory', icon: Server, label: 'Inventory' },
+  { to: '/forms', icon: FileText, label: 'Forms' },
 ];
 
 const QUICK_STAT_TONES = {
