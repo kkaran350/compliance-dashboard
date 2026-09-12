@@ -1,0 +1,3 @@
+*.pdf -text binary
+*.xlsx -text binary
+*.db -text binary
